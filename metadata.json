@@ -1,0 +1,5 @@
+{
+  "name": "PhysiLab: Material Stress Simulator",
+  "description": "A high-end scientific simulation comparing the mechanical properties of Spider Silk, Iron, and Stone with real-time 3D physics and data visualization.",
+  "requestFramePermissions": []
+}
