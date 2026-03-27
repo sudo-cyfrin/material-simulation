@@ -13,43 +13,35 @@ export interface MaterialProperties {
   youngsModulus: number; // GPa
   toughness: number; // MJ/m^3
   density: number; // kg/m^3
+  ballisticResistance: number; // Impact energy absorption (arbitrary units)
   color: string;
   description: string;
 }
 
 export const MATERIALS: MaterialProperties[] = [
   {
-    id: 'silk',
-    name: 'Spider Silk',
+    id: 'silk_vest',
+    name: 'Spider Silk Vest',
     icon: '🕸️',
     tensileStrength: 1100,
     youngsModulus: 10,
     toughness: 160,
     density: 1310,
-    color: '#FFFFFF', // Pure White
-    description: 'Incredible strength-to-weight ratio with extreme elasticity.'
+    ballisticResistance: 95,
+    color: '#1a202c', // Tactical Black/Dark Slate
+    description: 'Next-gen bio-engineered fiber vest. Exceptional energy dissipation through molecular elasticity.'
   },
   {
-    id: 'iron',
-    name: 'Structural Iron',
-    icon: '⚙️',
-    tensileStrength: 400,
-    youngsModulus: 200,
-    toughness: 50,
-    density: 7870,
-    color: '#E2E8F0', // Bright Silver / Iron
-    description: 'High stiffness and strength, prone to plastic deformation.'
-  },
-  {
-    id: 'stone',
-    name: 'Granite Stone',
-    icon: '🪨',
-    tensileStrength: 10,
-    youngsModulus: 50,
-    toughness: 0.1,
-    density: 2700,
-    color: '#94A3B8', // Medium Slate Gray / Stone
-    description: 'High compressive strength but extremely brittle under tension.'
+    id: 'kevlar_vest',
+    name: 'Conventional Vest',
+    icon: '🛡️',
+    tensileStrength: 3600,
+    youngsModulus: 120,
+    toughness: 40,
+    density: 1440,
+    ballisticResistance: 70,
+    color: '#556b2f', // Olive Drab (Military Green)
+    description: 'Standard NIJ-certified Kevlar plate carrier. High rigid resistance with localized deformation.'
   }
 ];
 
@@ -93,9 +85,9 @@ export const CEMENT_MATERIALS: CementProperties[] = [
 ];
 
 export interface SimState {
-  force: number; // Newtons
+  force: number; // Newtons (Impact Velocity)
   stress: number; // MPa
-  strain: number; // %
+  strain: number; // % (Penetration Depth)
   status: 'Elastic' | 'Yielding' | 'Broken';
   isBroken: boolean;
 }

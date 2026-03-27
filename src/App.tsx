@@ -5,18 +5,24 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Beaker, RotateCcw, Activity, Shield, Zap, Info, Download, Construction } from 'lucide-react';
+import { Beaker, RotateCcw, Activity, Shield, Zap, Info, Download, Construction, Video, ShieldCheck } from 'lucide-react';
 import { MATERIALS, CEMENT_MATERIALS, MaterialProperties, CementProperties, SimState, AppPage, cn } from './types';
 import { MaterialCard } from './components/MaterialCard';
-import { SimulationView } from './components/SimulationView';
+import { SimulationView2D } from './components/SimulationView2D';
+import { VestFrontView } from './components/VestFrontView';
 import { CementSimulationView } from './components/CementSimulationView';
+import { VideoGenerationView } from './components/VideoGenerationView';
+import { ProteinVestShowcase } from './components/ProteinVestShowcase';
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState<AppPage>('tensile');
   const [selectedMaterial, setSelectedMaterial] = useState<MaterialProperties>(MATERIALS[0]);
   const [selectedCement, setSelectedCement] = useState<CementProperties>(CEMENT_MATERIALS[0]);
   const [isComparisonMode, setIsComparisonMode] = useState(false);
+  const [viewMode, setViewMode] = useState<'cross' | 'front'>('cross');
   const [isCementComparisonMode, setIsCementComparisonMode] = useState(false);
+  const [showVideoGen, setShowVideoGen] = useState(false);
+  const [showProteinShowcase, setShowProteinShowcase] = useState(false);
   
   // Tensile Lab State
   const [force, setForce] = useState(0);
@@ -38,46 +44,31 @@ export default function App() {
   );
 
   const calculatePhysics = useCallback((currentForce: number, material: MaterialProperties, temp: number, diam: number) => {
-    const radiusM = (diam / 2) / 1000;
-    const areaM2 = Math.PI * Math.pow(radiusM, 2);
-    const stressMPa = (currentForce / areaM2) / 1000000;
+    // In Ballistics Lab:
+    // currentForce = Impact Velocity (m/s)
+    // diam = Bullet Caliber (mm)
     
-    let strainPercent = 0;
+    // Penetration depth calculation (simplified)
+    // Depth is proportional to kinetic energy (v^2) and inversely proportional to resistance
+    const velocity = currentForce;
+    const massFactor = diam / 10; // Normalized mass factor
+    const kineticEnergy = 0.5 * massFactor * Math.pow(velocity / 100, 2);
+    
+    let penetrationPercent = (kineticEnergy / material.ballisticResistance) * 100;
     let status: SimState['status'] = 'Elastic';
     let isBroken = false;
 
-    const tempFactor = 1 - (Math.max(0, temp - 25) / 1000);
-    const effectiveStrength = material.tensileStrength * tempFactor;
-    const effectiveE = material.youngsModulus * tempFactor;
-    const E_MPa = effectiveE * 1000;
-
-    if (material.id === 'silk') {
-      strainPercent = (stressMPa / E_MPa) * 100;
-      if (stressMPa > effectiveStrength) {
-        isBroken = true;
-        status = 'Broken';
-      }
-    } else if (material.id === 'iron') {
-      const yieldPoint = 250 * tempFactor;
-      if (stressMPa <= yieldPoint) {
-        strainPercent = (stressMPa / E_MPa) * 100;
-        status = 'Elastic';
-      } else if (stressMPa <= effectiveStrength) {
-        const elasticStrain = (yieldPoint / E_MPa) * 100;
-        const plasticStrain = (stressMPa - yieldPoint) / 10;
-        strainPercent = elasticStrain + plasticStrain;
-        status = 'Yielding';
-      } else {
-        isBroken = true;
-        status = 'Broken';
-      }
-    } else if (material.id === 'stone') {
-      strainPercent = (stressMPa / E_MPa) * 100;
-      if (stressMPa > effectiveStrength) {
-        isBroken = true;
-        status = 'Broken';
-      }
+    if (penetrationPercent > 100) {
+      penetrationPercent = 100;
+      isBroken = true;
+      status = 'Broken';
+    } else if (penetrationPercent > 70) {
+      status = 'Yielding';
     }
+
+    // Stress and Strain are repurposed for Ballistics
+    const stressMPa = kineticEnergy * 10; // Impact Energy
+    const strainPercent = penetrationPercent; // Penetration Depth %
 
     return { stress: stressMPa, strain: strainPercent, status, isBroken };
   }, []);
@@ -161,32 +152,52 @@ export default function App() {
             animate={{ opacity: 1, x: 0 }}
             className="flex flex-wrap gap-4"
           >
-            <nav className="flex bg-white/5 p-1 rounded-2xl glass">
-              <button 
-                onClick={() => { setCurrentPage('tensile'); handleReset(); }}
-                className={cn(
-                  "px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all",
-                  currentPage === 'tensile' ? "bg-purple-600 text-white" : "text-slate-400 hover:text-white"
-                )}
-              >
-                Tensile Lab
-              </button>
-              <button 
-                onClick={() => { setCurrentPage('cement'); handleReset(); }}
-                className={cn(
-                  "px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all",
-                  currentPage === 'cement' ? "bg-purple-600 text-white" : "text-slate-400 hover:text-white"
-                )}
-              >
-                Cement Lab
-              </button>
-            </nav>
+              <nav className="flex bg-white/5 p-1 rounded-2xl glass">
+                <button 
+                  onClick={() => { setCurrentPage('tensile'); handleReset(); }}
+                  className={cn(
+                    "px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all",
+                    currentPage === 'tensile' ? "bg-purple-600 text-white" : "text-slate-400 hover:text-white"
+                  )}
+                >
+                  Ballistics Lab
+                </button>
+                <button 
+                  onClick={() => { setCurrentPage('cement'); handleReset(); }}
+                  className={cn(
+                    "px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all",
+                    currentPage === 'cement' ? "bg-purple-600 text-white" : "text-slate-400 hover:text-white"
+                  )}
+                >
+                  Cement Lab
+                </button>
+                <button 
+                  onClick={() => setShowProteinShowcase(true)}
+                  className="px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider text-emerald-400 hover:text-white transition-all"
+                >
+                  Product Detail
+                </button>
+              </nav>
 
             <button 
               className="flex items-center gap-2 px-6 py-3 rounded-2xl glass glass-hover text-sm font-bold uppercase tracking-wider text-purple-400"
+              onClick={() => setShowVideoGen(true)}
+            >
+              <Video className="w-4 h-4" /> Cinematic Capture
+            </button>
+
+            <button 
+              className="flex items-center gap-2 px-6 py-3 rounded-2xl glass glass-hover text-sm font-bold uppercase tracking-wider text-emerald-400"
+              onClick={() => setShowProteinShowcase(true)}
+            >
+              <ShieldCheck className="w-4 h-4" /> View Prototype
+            </button>
+            
+            <button 
+              className="flex items-center gap-2 px-6 py-3 rounded-2xl glass glass-hover text-sm font-bold uppercase tracking-wider text-slate-400"
               onClick={() => window.open('#', '_blank')}
             >
-              <Download className="w-4 h-4" /> Download PPT
+              <Download className="w-4 h-4" /> PPT
             </button>
             
             <button 
@@ -246,11 +257,11 @@ export default function App() {
 
                 <div className="grid grid-cols-2 gap-6">
                   <div className="space-y-1">
-                    <p className="text-[10px] text-slate-500 uppercase font-bold">Current Stress</p>
-                    <p className="text-2xl font-mono font-bold">{activeSimState.stress.toFixed(1)} <span className="text-xs text-slate-500">MPa</span></p>
+                    <p className="text-[10px] text-slate-500 uppercase font-bold">Impact Energy</p>
+                    <p className="text-2xl font-mono font-bold">{activeSimState.stress.toFixed(1)} <span className="text-xs text-slate-500">kJ</span></p>
                   </div>
                   <div className="space-y-1">
-                    <p className="text-[10px] text-slate-500 uppercase font-bold">Current Strain</p>
+                    <p className="text-[10px] text-slate-500 uppercase font-bold">Penetration Depth</p>
                     <p className="text-2xl font-mono font-bold">{activeSimState.strain.toFixed(2)} <span className="text-xs text-slate-500">%</span></p>
                   </div>
                 </div>
@@ -258,25 +269,73 @@ export default function App() {
             </div>
 
             <div className="lg:col-span-8 space-y-8">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex bg-white/5 p-1 rounded-xl glass">
+                  <button 
+                    onClick={() => setViewMode('cross')}
+                    className={cn(
+                      "px-4 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all",
+                      viewMode === 'cross' ? "bg-purple-600 text-white shadow-lg" : "text-slate-400 hover:text-white"
+                    )}
+                  >
+                    Cross-Section
+                  </button>
+                  <button 
+                    onClick={() => setViewMode('front')}
+                    className={cn(
+                      "px-4 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all",
+                      viewMode === 'front' ? "bg-purple-600 text-white shadow-lg" : "text-slate-400 hover:text-white"
+                    )}
+                  >
+                    Front View
+                  </button>
+                </div>
+                <button 
+                  onClick={() => setIsComparisonMode(!isComparisonMode)}
+                  className="text-[10px] font-bold uppercase text-slate-500 hover:text-purple-400 transition-colors"
+                >
+                  {isComparisonMode ? "[ Single View ]" : "[ Compare Mode ]"}
+                </button>
+              </div>
+
               <div className={cn(
                 "grid gap-4",
-                isComparisonMode ? "grid-cols-1 md:grid-cols-3" : "grid-cols-1"
+                isComparisonMode ? `grid-cols-1 md:grid-cols-${MATERIALS.length}` : "grid-cols-1"
               )}>
                 {isComparisonMode ? (
                   MATERIALS.map(m => (
-                    <SimulationView 
-                      key={m.id}
-                      material={m} 
-                      strain={simStates[m.id].strain} 
-                      isBroken={simStates[m.id].isBroken} 
-                    />
+                    viewMode === 'cross' ? (
+                      <SimulationView2D 
+                        key={m.id}
+                        material={m} 
+                        strain={simStates[m.id].strain} 
+                        isBroken={simStates[m.id].isBroken} 
+                        compact={true}
+                      />
+                    ) : (
+                      <VestFrontView 
+                        key={m.id}
+                        material={m} 
+                        strain={simStates[m.id].strain} 
+                        isBroken={simStates[m.id].isBroken} 
+                        compact={true}
+                      />
+                    )
                   ))
                 ) : (
-                  <SimulationView 
-                    material={selectedMaterial} 
-                    strain={activeSimState.strain} 
-                    isBroken={activeSimState.isBroken} 
-                  />
+                  viewMode === 'cross' ? (
+                    <SimulationView2D 
+                      material={selectedMaterial} 
+                      strain={activeSimState.strain} 
+                      isBroken={activeSimState.isBroken} 
+                    />
+                  ) : (
+                    <VestFrontView 
+                      material={selectedMaterial} 
+                      strain={activeSimState.strain} 
+                      isBroken={activeSimState.isBroken} 
+                    />
+                  )
                 )}
               </div>
               
@@ -289,24 +348,24 @@ export default function App() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                   <div className="space-y-4">
                     <div className="flex justify-between items-center">
-                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Tensile Force</span>
-                      <span className="text-sm font-mono text-purple-400">{(force / 1000).toFixed(1)} kN</span>
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Impact Velocity</span>
+                      <span className="text-sm font-mono text-purple-400">{force} m/s</span>
                     </div>
-                    <input type="range" min="0" max="150000" step="100" value={force} onChange={(e) => setForce(Number(e.target.value))} className="w-full h-2 bg-purple-900/50 rounded-lg appearance-none cursor-pointer accent-purple-500" />
+                    <input type="range" min="0" max="1200" step="10" value={force} onChange={(e) => setForce(Number(e.target.value))} className="w-full h-2 bg-purple-900/50 rounded-lg appearance-none cursor-pointer accent-purple-500" />
                   </div>
                   <div className="space-y-4">
                     <div className="flex justify-between items-center">
-                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Temperature</span>
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Ambient Temp</span>
                       <span className="text-sm font-mono text-purple-400">{temperature}°C</span>
                     </div>
-                    <input type="range" min="-50" max="500" step="1" value={temperature} onChange={(e) => setTemperature(Number(e.target.value))} className="w-full h-2 bg-purple-900/50 rounded-lg appearance-none cursor-pointer accent-purple-500" />
+                    <input type="range" min="-50" max="100" step="1" value={temperature} onChange={(e) => setTemperature(Number(e.target.value))} className="w-full h-2 bg-purple-900/50 rounded-lg appearance-none cursor-pointer accent-purple-500" />
                   </div>
                   <div className="space-y-4">
                     <div className="flex justify-between items-center">
-                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Diameter</span>
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Bullet Caliber</span>
                       <span className="text-sm font-mono text-indigo-400">{diameter} mm</span>
                     </div>
-                    <input type="range" min="1" max="50" step="0.5" value={diameter} onChange={(e) => setDiameter(Number(e.target.value))} className="w-full h-2 bg-purple-900/50 rounded-lg appearance-none cursor-pointer accent-indigo-500" />
+                    <input type="range" min="4.5" max="12.7" step="0.1" value={diameter} onChange={(e) => setDiameter(Number(e.target.value))} className="w-full h-2 bg-purple-900/50 rounded-lg appearance-none cursor-pointer accent-indigo-500" />
                   </div>
                 </div>
               </div>
@@ -495,6 +554,15 @@ export default function App() {
           <a href="#" className="hover:text-purple-400 transition-colors">Privacy</a>
         </div>
       </footer>
+
+      <AnimatePresence>
+        {showVideoGen && (
+          <VideoGenerationView onClose={() => setShowVideoGen(false)} />
+        )}
+        {showProteinShowcase && (
+          <ProteinVestShowcase onClose={() => setShowProteinShowcase(false)} />
+        )}
+      </AnimatePresence>
     </div>
   );
 }

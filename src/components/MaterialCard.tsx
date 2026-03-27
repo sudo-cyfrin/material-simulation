@@ -40,16 +40,16 @@ export const MaterialCard = ({ material, isSelected, onClick }: MaterialCardProp
 
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-1">
+          <p className="text-[10px] text-slate-500 uppercase font-bold tracking-tighter">Ballistic Resistance</p>
+          <p className="text-sm font-mono text-white">{material.ballisticResistance} <span className="text-[10px] text-slate-400">Index</span></p>
+        </div>
+        <div className="space-y-1">
+          <p className="text-[10px] text-slate-500 uppercase font-bold tracking-tighter">Energy Absorption</p>
+          <p className="text-sm font-mono text-white">{material.toughness} <span className="text-[10px] text-slate-400">MJ/m³</span></p>
+        </div>
+        <div className="space-y-1">
           <p className="text-[10px] text-slate-500 uppercase font-bold tracking-tighter">Tensile Strength</p>
           <p className="text-sm font-mono text-white">{material.tensileStrength} <span className="text-[10px] text-slate-400">MPa</span></p>
-        </div>
-        <div className="space-y-1">
-          <p className="text-[10px] text-slate-500 uppercase font-bold tracking-tighter">Young's Modulus</p>
-          <p className="text-sm font-mono text-white">{material.youngsModulus} <span className="text-[10px] text-slate-400">GPa</span></p>
-        </div>
-        <div className="space-y-1">
-          <p className="text-[10px] text-slate-500 uppercase font-bold tracking-tighter">Toughness</p>
-          <p className="text-sm font-mono text-white">{material.toughness} <span className="text-[10px] text-slate-400">MJ/m³</span></p>
         </div>
         <div className="space-y-1">
           <p className="text-[10px] text-slate-500 uppercase font-bold tracking-tighter">Density</p>
