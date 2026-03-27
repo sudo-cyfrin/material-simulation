@@ -160,7 +160,7 @@ export default function App() {
                     currentPage === 'tensile' ? "bg-purple-600 text-white" : "text-slate-400 hover:text-white"
                   )}
                 >
-                  Ballistics Lab
+                  Bulletproof Vest
                 </button>
                 <button 
                   onClick={() => { setCurrentPage('cement'); handleReset(); }}
@@ -171,31 +171,11 @@ export default function App() {
                 >
                   Cement Lab
                 </button>
-                <button 
-                  onClick={() => setShowProteinShowcase(true)}
-                  className="px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider text-emerald-400 hover:text-white transition-all"
-                >
-                  Product Detail
-                </button>
               </nav>
 
             <button 
-              className="flex items-center gap-2 px-6 py-3 rounded-2xl glass glass-hover text-sm font-bold uppercase tracking-wider text-purple-400"
-              onClick={() => setShowVideoGen(true)}
-            >
-              <Video className="w-4 h-4" /> Cinematic Capture
-            </button>
-
-            <button 
-              className="flex items-center gap-2 px-6 py-3 rounded-2xl glass glass-hover text-sm font-bold uppercase tracking-wider text-emerald-400"
-              onClick={() => setShowProteinShowcase(true)}
-            >
-              <ShieldCheck className="w-4 h-4" /> View Prototype
-            </button>
-            
-            <button 
               className="flex items-center gap-2 px-6 py-3 rounded-2xl glass glass-hover text-sm font-bold uppercase tracking-wider text-slate-400"
-              onClick={() => window.open('#', '_blank')}
+              onClick={() => window.open('https://www.canva.com/design/DAHB-HuE_jc/TJ5weLDBRYxryjEtNCns3w/edit', '_blank')}
             >
               <Download className="w-4 h-4" /> PPT
             </button>
