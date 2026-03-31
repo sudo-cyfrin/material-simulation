@@ -290,6 +290,7 @@ export default function App() {
                         material={m} 
                         strain={simStates[m.id].strain} 
                         isBroken={simStates[m.id].isBroken} 
+                        velocity={simStates[m.id].force}
                         compact={true}
                       />
                     ) : (
@@ -298,6 +299,7 @@ export default function App() {
                         material={m} 
                         strain={simStates[m.id].strain} 
                         isBroken={simStates[m.id].isBroken} 
+                        velocity={simStates[m.id].force}
                         compact={true}
                       />
                     )
@@ -308,12 +310,14 @@ export default function App() {
                       material={selectedMaterial} 
                       strain={activeSimState.strain} 
                       isBroken={activeSimState.isBroken} 
+                      velocity={activeSimState.force}
                     />
                   ) : (
                     <VestFrontView 
                       material={selectedMaterial} 
                       strain={activeSimState.strain} 
                       isBroken={activeSimState.isBroken} 
+                      velocity={activeSimState.force}
                     />
                   )
                 )}
@@ -331,7 +335,7 @@ export default function App() {
                       <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Impact Velocity</span>
                       <span className="text-sm font-mono text-purple-400">{force} m/s</span>
                     </div>
-                    <input type="range" min="0" max="1200" step="10" value={force} onChange={(e) => setForce(Number(e.target.value))} className="w-full h-2 bg-purple-900/50 rounded-lg appearance-none cursor-pointer accent-purple-500" />
+                    <input type="range" min="0" max="2500" step="10" value={force} onChange={(e) => setForce(Number(e.target.value))} className="w-full h-2 bg-purple-900/50 rounded-lg appearance-none cursor-pointer accent-purple-500" />
                   </div>
                   <div className="space-y-4">
                     <div className="flex justify-between items-center">
@@ -345,7 +349,7 @@ export default function App() {
                       <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Bullet Caliber</span>
                       <span className="text-sm font-mono text-indigo-400">{diameter} mm</span>
                     </div>
-                    <input type="range" min="4.5" max="12.7" step="0.1" value={diameter} onChange={(e) => setDiameter(Number(e.target.value))} className="w-full h-2 bg-purple-900/50 rounded-lg appearance-none cursor-pointer accent-indigo-500" />
+                    <input type="range" min="4.5" max="22" step="0.1" value={diameter} onChange={(e) => setDiameter(Number(e.target.value))} className="w-full h-2 bg-purple-900/50 rounded-lg appearance-none cursor-pointer accent-indigo-500" />
                   </div>
                 </div>
               </div>

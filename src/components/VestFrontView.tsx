@@ -6,10 +6,11 @@ interface VestFrontViewProps {
   material: MaterialProperties;
   strain: number;
   isBroken: boolean;
+  velocity: number;
   compact?: boolean;
 }
 
-export const VestFrontView = ({ material, strain, isBroken, compact = false }: VestFrontViewProps) => {
+export const VestFrontView = ({ material, strain, isBroken, velocity, compact = false }: VestFrontViewProps) => {
   const impactScale = 1 + (strain / 100) * 0.2;
   const rippleCount = Math.floor(strain / 10);
 

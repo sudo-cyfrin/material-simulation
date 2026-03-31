@@ -6,10 +6,11 @@ interface SimulationView2DProps {
   material: MaterialProperties;
   strain: number;
   isBroken: boolean;
+  velocity: number;
   compact?: boolean;
 }
 
-export const SimulationView2D = ({ material, strain, isBroken, compact = false }: SimulationView2DProps) => {
+export const SimulationView2D = ({ material, strain, isBroken, velocity, compact = false }: SimulationView2DProps) => {
   const penetration = strain / 100;
   
   // Generate vest layers
@@ -186,7 +187,7 @@ export const SimulationView2D = ({ material, strain, isBroken, compact = false }
               <p className={cn(
                 "font-black text-white italic",
                 compact ? "text-sm" : "text-xl"
-              )}>850 m/s</p>
+              )}>{velocity} m/s</p>
             </div>
           </div>
 
