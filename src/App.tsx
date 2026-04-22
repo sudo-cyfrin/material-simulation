@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Beaker, RotateCcw, Activity, Shield, Zap, Info, Download, Construction, Video, ShieldCheck } from 'lucide-react';
+import { Beaker, RotateCcw, Activity, Shield, Zap, Info, Download, Construction, Video, ShieldCheck, FileText } from 'lucide-react';
 import { MATERIALS, CEMENT_MATERIALS, MaterialProperties, CementProperties, SimState, AppPage, cn } from './types';
 import { MaterialCard } from './components/MaterialCard';
 import { SimulationView2D } from './components/SimulationView2D';
@@ -13,6 +13,9 @@ import { VestFrontView } from './components/VestFrontView';
 import { CementSimulationView } from './components/CementSimulationView';
 import { VideoGenerationView } from './components/VideoGenerationView';
 import { ProteinVestShowcase } from './components/ProteinVestShowcase';
+import { PowerPointViewer } from './components/PowerPointViewer';
+import { BibliographyViewer } from './components/BibliographyViewer';
+import { TeamMembers } from './components/TeamMembers';
 
 export default function App() {
   const [currentPage, setCurrentPage] = useState<AppPage>('tensile');
@@ -23,6 +26,8 @@ export default function App() {
   const [isCementComparisonMode, setIsCementComparisonMode] = useState(false);
   const [showVideoGen, setShowVideoGen] = useState(false);
   const [showProteinShowcase, setShowProteinShowcase] = useState(false);
+  const [showPowerPointViewer, setShowPowerPointViewer] = useState(false);
+  const [showBibliographyViewer, setShowBibliographyViewer] = useState(false);
   
   // Tensile Lab State
   const [force, setForce] = useState(0);
@@ -175,9 +180,16 @@ export default function App() {
 
             <button 
               className="flex items-center gap-2 px-6 py-3 rounded-2xl glass glass-hover text-sm font-bold uppercase tracking-wider text-slate-400"
-              onClick={() => window.open('https://www.canva.com/design/DAHB-HuE_jc/TJ5weLDBRYxryjEtNCns3w/edit', '_blank')}
+              onClick={() => setShowPowerPointViewer(true)}
             >
-              <Download className="w-4 h-4" /> PPT
+              <FileText className="w-4 h-4" /> PPT
+            </button>
+
+            <button 
+              className="flex items-center gap-2 px-6 py-3 rounded-2xl glass glass-hover text-sm font-bold uppercase tracking-wider text-amber-400"
+              onClick={() => setShowBibliographyViewer(true)}
+            >
+              <FileText className="w-4 h-4" /> Bibliography
             </button>
             
             <button 
@@ -246,6 +258,8 @@ export default function App() {
                   </div>
                 </div>
               </div>
+
+              <TeamMembers />
             </div>
 
             <div className="lg:col-span-8 space-y-8">
@@ -430,6 +444,8 @@ export default function App() {
                   </div>
                 </div>
               </div>
+
+              <TeamMembers />
             </div>
 
             {/* Cement Lab Main */}
@@ -545,6 +561,12 @@ export default function App() {
         )}
         {showProteinShowcase && (
           <ProteinVestShowcase onClose={() => setShowProteinShowcase(false)} />
+        )}
+        {showPowerPointViewer && (
+          <PowerPointViewer isOpen={showPowerPointViewer} onClose={() => setShowPowerPointViewer(false)} />
+        )}
+        {showBibliographyViewer && (
+          <BibliographyViewer isOpen={showBibliographyViewer} onClose={() => setShowBibliographyViewer(false)} />
         )}
       </AnimatePresence>
     </div>
