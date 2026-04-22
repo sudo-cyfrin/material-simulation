@@ -41,7 +41,7 @@ export function BibliographyViewer({ isOpen, onClose }: BibliographyViewerProps)
           initial={{ scale: 0.95, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.95, opacity: 0 }}
-          className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-3xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden border border-purple-500/20"
+          className="bg-gradient-to-br from-slate-900 to-slate-800 rounded-3xl shadow-2xl max-w-4xl w-full max-h-[90vh] border border-purple-500/20 flex flex-col"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
@@ -64,7 +64,7 @@ export function BibliographyViewer({ isOpen, onClose }: BibliographyViewerProps)
           </div>
 
           {/* Content */}
-          <div className="p-6 space-y-6">
+          <div className="flex-1 p-6 space-y-6 overflow-y-auto">
             {/* Preview Section */}
             <div className="glass p-8 rounded-2xl">
               <div className="flex items-center justify-between mb-6">
